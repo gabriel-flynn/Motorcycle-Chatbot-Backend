@@ -1,3 +1,7 @@
+# GoLand/Project specific stuff
+.env
+.idea/
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
