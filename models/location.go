@@ -7,10 +7,10 @@ import (
 
 type Location struct {
 	gorm.Model
-	name string
-	closestTrack Track
-	xCord float32
-	yCord float32
+	Name string
+	ClosestTrack Track `gorm:"foreignkey:id;references:id;"`
+	latitude float32
+	longitude float32
 }
 
 

@@ -2,14 +2,20 @@ package models
 
 import (
 	"fmt"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"log"
 	"os"
 )
 
 var db *gorm.DB
 
 func init() {
+	e := godotenv.Load()
+	if e != nil {
+		log.Fatal("Error loading .env file")
+	}
 	username := os.Getenv("db_user")
 	password := os.Getenv("db_pass")
 	dbName := os.Getenv("db_name")
@@ -24,7 +30,7 @@ func init() {
 	}
 	db = conn
 
-	db.AutoMigrate(&Location{})
+	db.AutoMigrate(&Location{}, &Track{})
 }
 
 

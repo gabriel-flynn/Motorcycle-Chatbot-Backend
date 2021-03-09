@@ -1,6 +1,9 @@
 package models
 
+import "gorm.io/gorm"
+
 type Track struct {
+	gorm.Model
 	Name string
 	City string
 	State string
