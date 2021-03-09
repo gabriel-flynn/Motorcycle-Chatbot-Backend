@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
 )
@@ -15,7 +14,6 @@ var Config *config
 func init() {
 	bingKey := os.Getenv("bing_api_key")
 	if bingKey == "" {
-		fmt.Println(bingKey)
 		log.Fatal("Missing an API key! Please set your bing api to an environment variable called bing_api_key.")
 	}
 
