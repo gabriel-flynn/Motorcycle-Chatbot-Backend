@@ -1,4 +1,4 @@
-# Track-Locator
+# Motorcycle-Chatbot-Backend
 An API built in Golang to find the closest motorcycle track in the USA to a user using the Bing Maps API. 
 
 - Pretty bare bones API built with the intended usecase of being consumed in a chatbot that is knowledgeable about motorcyles.
