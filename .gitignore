@@ -1,3 +1,6 @@
+# Maxmind
+GeoLite2-City.mmdb
+
 # GoLand/Project specific stuff
 .env
 .idea/

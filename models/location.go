@@ -4,13 +4,20 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 )
-
+//`gorm:"foreignkey:id;references:id;"`
 type Location struct {
 	gorm.Model
 	Name string
-	ClosestTrack Track `gorm:"foreignkey:id;references:id;"`
-	latitude float32
-	longitude float32
+	ClosestTrack Track
+	ClosestTrackId uint
+	Latitude float32
+	Longitude float32
+}
+
+type TrackJoin struct {
+	gorm.Model
+	ClosestTrackId int
+	ClosestTrack Track
 }
 
 
