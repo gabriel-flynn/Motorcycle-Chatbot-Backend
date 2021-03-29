@@ -51,11 +51,11 @@ func PopulateTracksInDB() {
 	}
 }
 
-type PlaceSearchResponse struct {
-	Candidates []*PlaceID `json:"candidates"`
+type placeSearchResponse struct {
+	candidates []*placeID `json:"candidates"`
 }
 
-type PlaceID struct {
+type placeID struct {
 	Id string `json:"place_id"`
 }
 
@@ -76,29 +76,29 @@ func getPlaceId(query string) (string, error) {
 		return "", fmt.Errorf("The HTTP request failed with error %s\n", err)
 	} else {
 		data, _ := ioutil.ReadAll(response.Body)
-		var response PlaceSearchResponse
+		var response placeSearchResponse
 		json.Unmarshal(data, &response)
-		if len(response.Candidates) > 0 {
-			return response.Candidates[0].Id, nil
+		if len(response.candidates) > 0 {
+			return response.candidates[0].Id, nil
 		} else {
 			return "", errors.New("could not find any places for that query")
 		}
 	}
 }
 
-type PlaceDetailsResponse struct {
-	Result struct {
-		Address string `json:"formatted_address"`
-		Geometry struct {
-			Location struct{
-				Lat float32 `json:"lat"`
-				Long float32 `json:"lng"`
+type placeDetailsResponse struct {
+	result struct {
+		address  string `json:"formatted_address"`
+		geometry struct {
+			location struct{
+				lat  float64 `json:"lat"`
+				long float64 `json:"lng"`
 			}
 		} `json:"geometry`
-		Name    string `json:"name"`
-		Website string `json:"website"`
+		name    string `json:"name"`
+		website string `json:"website"`
 	} `json:"result"`
-	Status string `json:"status"`
+	status string `json:"status"`
 }
 
 func getPlaceDetails(placeId string) (*models.Track, error){
@@ -116,10 +116,10 @@ func getPlaceDetails(placeId string) (*models.Track, error){
 		return nil, fmt.Errorf("The HTTP request failed with error %s\n", err)
 	} else {
 		data, _ := ioutil.ReadAll(response.Body)
-		var response PlaceDetailsResponse
+		var response placeDetailsResponse
 		json.Unmarshal(data, &response)
 
-		track := &models.Track{Name: response.Result.Name, Address: response.Result.Address, URL: response.Result.Website, Latitude: response.Result.Geometry.Location.Lat, Longitude: response.Result.Geometry.Location.Long}
+		track := &models.Track{Name: response.result.name, Address: response.result.address, URL: response.result.website, Latitude: response.result.geometry.location.lat, Longitude: response.result.geometry.location.long}
 		return track, nil
 	}
 }

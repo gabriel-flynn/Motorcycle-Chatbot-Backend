@@ -30,12 +30,7 @@ func init() {
 	}
 	db = conn
 
-	db.AutoMigrate(&Location{}, &Track{})
-
-	var track *Track
-	db.First(&track)
-	location := &Location{Name: "idk", ClosestTrack: Track{}, ClosestTrackId: track.ID, Latitude: track.Latitude, Longitude: track.Longitude}
-	db.Save(location)
+	db.AutoMigrate(&User{}, &Location{}, &Track{})
 }
 
 func GetDB() *gorm.DB {

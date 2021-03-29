@@ -7,6 +7,6 @@ type Track struct {
 	Name string
 	Address string `gorm:"unique"`
 	URL string
-	Latitude float32
-	Longitude float32
+	Latitude float64
+	Longitude float64
 }
