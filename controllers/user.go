@@ -64,7 +64,6 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	if result.Error == nil {
 		respondJSON(w, http.StatusOK, user)
 	} else {
-		fmt.Println(user.Name)
 		var i struct{}
 		respondJSON(w, http.StatusNoContent, i)
 	}
