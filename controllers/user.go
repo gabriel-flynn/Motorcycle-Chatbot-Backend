@@ -29,12 +29,12 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 		Latitude:       record.Location.Latitude,
 		Longitude:      record.Location.Longitude,
 	}
-
 	closestTrack := services.FindClosestTrack(location)
 	var body requestBody
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&body); err != nil {
-		fmt.Fprintln(w, http.StatusBadRequest, "Invalid request payload")
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintln(w, "Invalid request payload")
 		return
 	}
 	defer r.Body.Close()
@@ -58,13 +58,13 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		//TODO: HANDLE ERROR
 	}
-
 	var user *models.User
 	result := db.Joins("ClosestTrack").Joins("Location").First(&user, "ip_address = ?", ipStr)
 
 	if result.Error == nil {
 		respondJSON(w, http.StatusOK, user)
 	} else {
+		fmt.Println(user.Name)
 		var i struct{}
 		respondJSON(w, http.StatusNoContent, i)
 	}
