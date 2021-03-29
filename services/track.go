@@ -22,11 +22,13 @@ func haversine(lng1 float64, lat1 float64, lng2 float64, lat2 float64) float64 {
 	return earthRadius * c
 }
 
-func FindClosestTrack(longitude float64, latitude float64)  (closestTrack *models.Track){
+func FindClosestTrack(location *models.Location)  (closestTrack *models.Track){
 	db := models.GetDB()
 	var tracks []models.Track
 	db.Find(&tracks)
 
+	longitude := location.Longitude
+	latitude := location.Latitude
 	closestTrack = nil
 	closestDist := math.MaxFloat64
 	for _, track := range tracks {
@@ -38,4 +40,8 @@ func FindClosestTrack(longitude float64, latitude float64)  (closestTrack *model
 		}
 	}
 	return
+}
+
+func TravelTimeToTrack(location *models.Location) {
+	// Use Google Maps distance matrix API to calculate travel time
 }

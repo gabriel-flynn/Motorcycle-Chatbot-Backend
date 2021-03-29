@@ -52,7 +52,7 @@ func PopulateTracksInDB() {
 }
 
 type placeSearchResponse struct {
-	candidates []*placeID `json:"candidates"`
+	Candidates []*placeID `json:"candidates"`
 }
 
 type placeID struct {
@@ -78,8 +78,8 @@ func getPlaceId(query string) (string, error) {
 		data, _ := ioutil.ReadAll(response.Body)
 		var response placeSearchResponse
 		json.Unmarshal(data, &response)
-		if len(response.candidates) > 0 {
-			return response.candidates[0].Id, nil
+		if len(response.Candidates) > 0 {
+			return response.Candidates[0].Id, nil
 		} else {
 			return "", errors.New("could not find any places for that query")
 		}
@@ -87,18 +87,18 @@ func getPlaceId(query string) (string, error) {
 }
 
 type placeDetailsResponse struct {
-	result struct {
-		address  string `json:"formatted_address"`
-		geometry struct {
-			location struct{
-				lat  float64 `json:"lat"`
-				long float64 `json:"lng"`
+	Result struct {
+		Address  string `json:"formatted_address"`
+		Geometry struct {
+			Location struct{
+				Lat  float64 `json:"lat"`
+				Long float64 `json:"lng"`
 			}
-		} `json:"geometry`
-		name    string `json:"name"`
-		website string `json:"website"`
+		} `json:"Geometry"`
+		Name    string `json:"name"`
+		Website string `json:"website"`
 	} `json:"result"`
-	status string `json:"status"`
+	Status string `json:"status"`
 }
 
 func getPlaceDetails(placeId string) (*models.Track, error){
@@ -119,7 +119,7 @@ func getPlaceDetails(placeId string) (*models.Track, error){
 		var response placeDetailsResponse
 		json.Unmarshal(data, &response)
 
-		track := &models.Track{Name: response.result.name, Address: response.result.address, URL: response.result.website, Latitude: response.result.geometry.location.lat, Longitude: response.result.geometry.location.long}
+		track := &models.Track{Name: response.Result.Name, Address: response.Result.Address, URL: response.Result.Website, Latitude: response.Result.Geometry.Location.Lat, Longitude: response.Result.Geometry.Location.Long}
 		return track, nil
 	}
 }
