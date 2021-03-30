@@ -11,13 +11,7 @@ import (
 )
 
 func SetLocationAndLatitude(location *models.Location) error {
-	query := ""
-	if location.City != "" {
-		query += location.City
-	}
-	if location.State != "" {
-		query += ", " + location.State
-	}
+	query := location.LocationString
 
 	lat, long, err := makePlacesApiCall(query)
 	if err != nil {

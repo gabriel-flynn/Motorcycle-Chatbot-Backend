@@ -34,10 +34,9 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	location := &models.Location{
-		Latitude:  record.Location.Latitude,
-		Longitude: record.Location.Longitude,
-		City:      city,
-		State:     state,
+		Latitude:       record.Location.Latitude,
+		Longitude:      record.Location.Longitude,
+		LocationString: fmt.Sprintf("%s,%s", city, state),
 	}
 	closestTrack := services.FindClosestTrack(location)
 	var body requestBody

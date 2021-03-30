@@ -11,8 +11,7 @@ import (
 )
 
 type updateLocationRequestBody struct {
-	City  string `json:"city"`
-	State string `json:"state"`
+	LocationString string `json:"location_string"`
 }
 
 func UpdateLocation(w http.ResponseWriter, r *http.Request) {
@@ -38,11 +37,12 @@ func UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	user.Location.City = body.City
-	user.Location.State = body.State
+	user.Location.LocationString = body.LocationString
 	services.SetLocationAndLatitude(user.Location)
 	user.ClosestTrack = services.FindClosestTrack(user.Location)
 
 	db.Save(user.Location)
 	db.Save(user)
+
+	controllers.RespondJSON(w, http.StatusOK, user)
 }
