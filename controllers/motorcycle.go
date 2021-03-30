@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gabriel-flynn/Track-Locator/models"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"math"
 	"net/http"
 	"strconv"
@@ -55,11 +54,12 @@ func buildQuery(body *motoRequestBody, db *gorm.DB) *gorm.DB {
 		db = db.Where("engine_type IN ?", body.EngineTypes)
 	}
 
-	db = db.Order("overall_rating")
+	db = db.Order("overall_rating DESC")
 	if len(body.OrderBy) > 0 {
-		db = db.Clauses(clause.OrderBy{
-			Expression: clause.Expr{SQL: "FIELD(?)", Vars: []interface{}{body.OrderBy}, WithoutParentheses: true},
-		})
+		for _, order := range body.OrderBy {
+			order = fmt.Sprintf("Review__%s DESC", order)
+			db = db.Order(order)
+		}
 	}
 	return db
 }
@@ -85,7 +85,7 @@ func GetMotorcycles(w http.ResponseWriter, r *http.Request) {
 	var motorcycles []*models.Motorcycle
 	body.cleanup()
 	db = buildQuery(&body, db)
-	db.Joins("Review").Limit(int(top)).Find(&motorcycles)
+	db.Debug().Joins("Review").Limit(int(top)).Find(&motorcycles)
 
 	respondJSON(w, http.StatusOK, motorcycles)
 

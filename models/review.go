@@ -1,7 +1,7 @@
 package models
 
 type Review struct {
-	Id                      uint `gorm:"primaryKey;"`
+	Id                      uint `gorm:"primaryKey;" json:"-"`
 	OverallRating           uint8 `json:"overall_rating"`
 	OverallRatingReviewText string `json:"overall_rating_review_text"`
 	RideQuality             uint8 `json:"ride_quality"`
