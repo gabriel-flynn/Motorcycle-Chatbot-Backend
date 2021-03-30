@@ -83,19 +83,8 @@ func GetMotorcycles(w http.ResponseWriter, r *http.Request) {
 	var motorcycles []*models.Motorcycle
 	body.cleanup()
 	db = buildQuery(&body, db)
-	db.Debug().Joins("Review").Find(&motorcycles)
+	db.Joins("Review").Limit(int(top)).Find(&motorcycles)
 
-	//for _, motorcycle := range motorcycles {
-	//	fmt.Printf("ID: %d Make: %s Engine Type: %s, YearStart: %d YearEnd: %d", motorcycle.Id, motorcycle.Make, motorcycle.EngineType, motorcycle.YearStart, motorcycle.YearEnd)
-	//}
-	//fmt.Println(result.Statement)
-	//fmt.Println(motorcycles.Model + " " + motorcycles.EngineType)
-	//ver motorcycles []*models
-	//result := db.Find()
+	respondJSON(w, http.StatusOK, motorcycles)
 
-	fmt.Println(body.SeatHeight)
-	fmt.Println(body.YearStart)
-	fmt.Println(body.Budget)
-	fmt.Println(body.Category)
-	fmt.Println(body.EngineTypes[0])
 }
