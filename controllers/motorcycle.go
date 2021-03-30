@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"github.com/gabriel-flynn/Track-Locator/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"math"
 	"net/http"
 	"strconv"
 )
 
 type motoRequestBody struct {
-	Category    string   `json:"category"`
+	Categories    []string   `json:"categories"`
 	Budget      float32  `json:"budget"`
 	SeatHeight  uint8    `json:"seat_height"`
 	YearStart   uint16   `json:"year_start"`
@@ -34,8 +35,9 @@ func (r *motoRequestBody) cleanup() {
 func buildQuery(body *motoRequestBody, db *gorm.DB) *gorm.DB {
 	//Need to clean up the database -> looks of missing info
 	db = db.Where("make != \"\" AND model != \"\"")
-	if body.Category != "" {
-		db = db.Where("category LIKE %?%", body.Category)
+	for _,category := range body.Categories {
+		fmt.Println("Category: " + category)
+		db = db.Where("category LIKE ?", fmt.Sprintf("%%%s%%", category))
 	}
 	if body.Budget != 0 {
 		db = db.Where("price <= ? AND price != 0", body.Budget)
@@ -55,9 +57,9 @@ func buildQuery(body *motoRequestBody, db *gorm.DB) *gorm.DB {
 
 	db = db.Order("overall_rating")
 	if len(body.OrderBy) > 0 {
-		for _, orderValue := range body.OrderBy {
-			db = db.Order(orderValue)
-		}
+		db = db.Clauses(clause.OrderBy{
+			Expression: clause.Expr{SQL: "FIELD(?)", Vars: []interface{}{body.OrderBy}, WithoutParentheses: true},
+		})
 	}
 	return db
 }
