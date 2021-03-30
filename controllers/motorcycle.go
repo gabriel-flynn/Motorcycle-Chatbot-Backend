@@ -19,7 +19,7 @@ type motoRequestBody struct {
 	EngineTypes []string `json:"engine_types"`
 }
 
-func (r *motoRequestBody)cleanup() {
+func (r *motoRequestBody) cleanup() {
 	//Handle years
 	if r.YearStart <= 1800 {
 		r.YearStart = 0
@@ -33,7 +33,7 @@ func (r *motoRequestBody)cleanup() {
 func buildQuery(body *motoRequestBody, db *gorm.DB) *gorm.DB {
 	//Need to clean up the database -> looks of missing info
 	db = db.Where("make != \"\" AND model != \"\"")
-	if body.Category != ""{
+	if body.Category != "" {
 		db = db.Where("category LIKE %?%", body.Category)
 	}
 	if body.Budget != 0 {
