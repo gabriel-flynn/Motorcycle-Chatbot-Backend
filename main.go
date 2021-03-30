@@ -8,11 +8,10 @@ import (
 	"net/http"
 )
 
-
 func main() {
 	utils.InitGetIPDB()
 	r := routers.SetupRouter()
 
-	fmt.Println("Server is starting")
+	fmt.Println("Server is listening on port 8081")
 	log.Fatal(http.ListenAndServe(":8081", r))
 }

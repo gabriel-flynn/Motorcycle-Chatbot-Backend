@@ -26,8 +26,8 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 	location := &models.Location{
-		Latitude:       record.Location.Latitude,
-		Longitude:      record.Location.Longitude,
+		Latitude:  record.Location.Latitude,
+		Longitude: record.Location.Longitude,
 	}
 	closestTrack := services.FindClosestTrack(location)
 	var body requestBody
@@ -40,11 +40,11 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	user := &models.User{
-		Name:      body.Name,
-		IPAddress: ipStr,
-		ClosestTrack:  closestTrack,
+		Name:           body.Name,
+		IPAddress:      ipStr,
+		ClosestTrack:   closestTrack,
 		ClosestTrackId: closestTrack.ID,
-		Location: location,
+		Location:       location,
 	}
 	db := models.GetDB()
 	db.Save(user)

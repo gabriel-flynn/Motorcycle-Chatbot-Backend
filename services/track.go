@@ -15,14 +15,14 @@ func haversine(lng1 float64, lat1 float64, lng2 float64, lat2 float64) float64 {
 
 	//haversine formula
 	a := math.Pow(math.Sin(latDist/2), 2) +
-		math.Pow(math.Sin(lngDist/2), 2) *
-		math.Cos(lat1) * math.Cos(lat2)
+		math.Pow(math.Sin(lngDist/2), 2)*
+			math.Cos(lat1)*math.Cos(lat2)
 	earthRadius := 6371.0
 	c := 2 * math.Asin(math.Sqrt(a))
 	return earthRadius * c
 }
 
-func FindClosestTrack(location *models.Location)  (closestTrack *models.Track){
+func FindClosestTrack(location *models.Location) (closestTrack *models.Track) {
 	db := models.GetDB()
 	var tracks []models.Track
 	db.Find(&tracks)
@@ -32,7 +32,7 @@ func FindClosestTrack(location *models.Location)  (closestTrack *models.Track){
 	closestTrack = nil
 	closestDist := math.MaxFloat64
 	for _, track := range tracks {
-		dist := haversine(track.Longitude, track.Latitude, longitude, latitude )
+		dist := haversine(track.Longitude, track.Latitude, longitude, latitude)
 		if dist < closestDist {
 			trackCopy := track
 			closestTrack = &trackCopy

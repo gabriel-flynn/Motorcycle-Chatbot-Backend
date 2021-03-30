@@ -34,14 +34,14 @@ func PopulateTracksInDB() {
 		for _, rec := range record {
 			query := strings.TrimSpace(rec)
 			fmt.Println(query)
-			placeId, err  := getPlaceId(query)
-			if err != nil{
+			placeId, err := getPlaceId(query)
+			if err != nil {
 				log.Fatal(err)
 			} else {
 				fmt.Printf("Place ID: %s\n", placeId)
 			}
 			track, err := getPlaceDetails(placeId)
-			if err != nil{
+			if err != nil {
 				fmt.Println(err)
 			} else {
 				fmt.Printf("Track: %s\n\n", track)
@@ -90,7 +90,7 @@ type placeDetailsResponse struct {
 	Result struct {
 		Address  string `json:"formatted_address"`
 		Geometry struct {
-			Location struct{
+			Location struct {
 				Lat  float64 `json:"lat"`
 				Long float64 `json:"lng"`
 			}
@@ -101,7 +101,7 @@ type placeDetailsResponse struct {
 	Status string `json:"status"`
 }
 
-func getPlaceDetails(placeId string) (*models.Track, error){
+func getPlaceDetails(placeId string) (*models.Track, error) {
 	request, _ := http.NewRequest("GET", config.Config.GooglePlaceDetailsUrl, nil)
 
 	//Query params

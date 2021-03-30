@@ -6,8 +6,8 @@ import (
 )
 
 type config struct {
-	GoogleKey            string
-	GooglePlaceSearchUrl string
+	GoogleKey             string
+	GooglePlaceSearchUrl  string
 	GooglePlaceDetailsUrl string
 }
 
