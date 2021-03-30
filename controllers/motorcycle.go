@@ -11,7 +11,7 @@ import (
 )
 
 type motoRequestBody struct {
-	Categories    []string   `json:"categories"`
+	Categories  []string `json:"categories"`
 	Budget      float32  `json:"budget"`
 	SeatHeight  uint8    `json:"seat_height"`
 	YearStart   uint16   `json:"year_start"`
@@ -34,7 +34,7 @@ func (r *motoRequestBody) cleanup() {
 func buildQuery(body *motoRequestBody, db *gorm.DB) *gorm.DB {
 	//Need to clean up the database -> looks of missing info
 	db = db.Where("make != \"\" AND model != \"\"")
-	for _,category := range body.Categories {
+	for _, category := range body.Categories {
 		fmt.Println("Category: " + category)
 		db = db.Where("category LIKE ?", fmt.Sprintf("%%%s%%", category))
 	}
@@ -87,6 +87,6 @@ func GetMotorcycles(w http.ResponseWriter, r *http.Request) {
 	db = buildQuery(&body, db)
 	db.Debug().Joins("Review").Limit(int(top)).Find(&motorcycles)
 
-	respondJSON(w, http.StatusOK, motorcycles)
+	RespondJSON(w, http.StatusOK, motorcycles)
 
 }

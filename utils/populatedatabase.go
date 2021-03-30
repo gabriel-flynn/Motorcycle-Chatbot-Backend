@@ -93,8 +93,8 @@ type placeDetailsResponse struct {
 			Location struct {
 				Lat  float64 `json:"lat"`
 				Long float64 `json:"lng"`
-			}
-		} `json:"Geometry"`
+			} `json:"location"`
+		} `json:"geometry"`
 		Name    string `json:"name"`
 		Website string `json:"website"`
 	} `json:"result"`

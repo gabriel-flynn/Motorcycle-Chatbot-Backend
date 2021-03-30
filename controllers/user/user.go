@@ -1,8 +1,9 @@
-package controllers
+package user
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gabriel-flynn/Track-Locator/controllers"
 	"github.com/gabriel-flynn/Track-Locator/models"
 	"github.com/gabriel-flynn/Track-Locator/services"
 	"github.com/gabriel-flynn/Track-Locator/utils"
@@ -25,9 +26,18 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	city := record.City.Names["en"]
+	state := ""
+	if len(record.Subdivisions) > 0 {
+		state = record.Subdivisions[0].Names["en"]
+	}
+
 	location := &models.Location{
 		Latitude:  record.Location.Latitude,
 		Longitude: record.Location.Longitude,
+		City:      city,
+		State:     state,
 	}
 	closestTrack := services.FindClosestTrack(location)
 	var body requestBody
@@ -49,7 +59,7 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 	db := models.GetDB()
 	db.Save(user)
 
-	respondJSON(w, http.StatusOK, user)
+	controllers.RespondJSON(w, http.StatusOK, user)
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -62,9 +72,9 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	result := db.Joins("ClosestTrack").Joins("Location").First(&user, "ip_address = ?", ipStr)
 
 	if result.Error == nil {
-		respondJSON(w, http.StatusOK, user)
+		controllers.RespondJSON(w, http.StatusOK, user)
 	} else {
 		var i struct{}
-		respondJSON(w, http.StatusNoContent, i)
+		controllers.RespondJSON(w, http.StatusNoContent, i)
 	}
 }
