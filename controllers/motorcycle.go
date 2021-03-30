@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gabriel-flynn/Track-Locator/models"
+	"gorm.io/gorm"
+	"math"
 	"net/http"
 	"strconv"
 )
@@ -15,7 +17,41 @@ type motoRequestBody struct {
 	YearStart   uint16   `json:"year_start"`
 	YearEnd     uint16   `json:"year_end"`
 	EngineTypes []string `json:"engine_types"`
-	Extra       string   `json:"extra"`
+}
+
+func (r *motoRequestBody)cleanup() {
+	//Handle years
+	if r.YearStart <= 1800 {
+		r.YearStart = 0
+	}
+	if r.YearEnd <= 1800 {
+		r.YearEnd = math.MaxUint16
+	}
+
+}
+
+func buildQuery(body *motoRequestBody, db *gorm.DB) *gorm.DB {
+	//Need to clean up the database -> looks of missing info
+	db = db.Where("make != \"\" AND model != \"\"")
+	if body.Category != ""{
+		db = db.Where("category LIKE %?%", body.Category)
+	}
+	if body.Budget != 0 {
+		db = db.Where("price <= ?", body.Budget)
+	}
+	if body.SeatHeight != 0 {
+		db = db.Where("seat_height <= ?", body.SeatHeight)
+	}
+	if body.YearStart != 0 {
+		db = db.Where("year_start >= ?", body.YearStart)
+	}
+	if body.YearEnd != math.MaxUint16 {
+		db = db.Where("year_end <= ? AND year_end != 0", body.YearEnd)
+	}
+	if len(body.EngineTypes) > 0 {
+		db = db.Where("engine_type IN ?", body.EngineTypes)
+	}
+	return db
 }
 
 func GetMotorcycles(w http.ResponseWriter, r *http.Request) {
@@ -37,16 +73,22 @@ func GetMotorcycles(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("after body")
 	defer r.Body.Close()
 	db := models.GetDB()
-	var motorcycles *models.Motorcycle
-	db.First(&motorcycles)
-	fmt.Println(motorcycles.Model + " " + motorcycles.EngineType)
+	var motorcycles []*models.Motorcycle
+
+	db = buildQuery(&body, db)
+	db.Debug().Joins("Review").Find(&motorcycles)
+
+	//for _, motorcycle := range motorcycles {
+	//	fmt.Printf("ID: %d Make: %s Engine Type: %s, YearStart: %d YearEnd: %d", motorcycle.Id, motorcycle.Make, motorcycle.EngineType, motorcycle.YearStart, motorcycle.YearEnd)
+	//}
+	//fmt.Println(result.Statement)
+	//fmt.Println(motorcycles.Model + " " + motorcycles.EngineType)
 	//ver motorcycles []*models
 	//result := db.Find()
+
 	fmt.Println(body.SeatHeight)
 	fmt.Println(body.YearStart)
 	fmt.Println(body.Budget)
 	fmt.Println(body.Category)
 	fmt.Println(body.EngineTypes[0])
-	fmt.Println(body.EngineTypes[1])
-	fmt.Println(body.Extra)
 }
