@@ -17,6 +17,7 @@ type motoRequestBody struct {
 	YearStart   uint16   `json:"year_start"`
 	YearEnd     uint16   `json:"year_end"`
 	EngineTypes []string `json:"engine_types"`
+	OrderBy     []string `json:"order_by"`
 }
 
 func (r *motoRequestBody) cleanup() {
@@ -37,7 +38,7 @@ func buildQuery(body *motoRequestBody, db *gorm.DB) *gorm.DB {
 		db = db.Where("category LIKE %?%", body.Category)
 	}
 	if body.Budget != 0 {
-		db = db.Where("price <= ?", body.Budget)
+		db = db.Where("price <= ? AND price != 0", body.Budget)
 	}
 	if body.SeatHeight != 0 {
 		db = db.Where("seat_height <= ?", body.SeatHeight)
@@ -51,6 +52,13 @@ func buildQuery(body *motoRequestBody, db *gorm.DB) *gorm.DB {
 	if len(body.EngineTypes) > 0 {
 		db = db.Where("engine_type IN ?", body.EngineTypes)
 	}
+
+	db = db.Order("overall_rating")
+	if len(body.OrderBy) > 0 {
+		for _, orderValue := range body.OrderBy {
+			db = db.Order(orderValue)
+		}
+	}
 	return db
 }
 
@@ -62,7 +70,6 @@ func GetMotorcycles(w http.ResponseWriter, r *http.Request) {
 		top = 5
 	}
 	fmt.Println(top)
-	fmt.Println("before body")
 	var body motoRequestBody
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&body); err != nil {
@@ -70,11 +77,11 @@ func GetMotorcycles(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Invalid request payload")
 		return
 	}
-	fmt.Println("after body")
 	defer r.Body.Close()
+
 	db := models.GetDB()
 	var motorcycles []*models.Motorcycle
-
+	body.cleanup()
 	db = buildQuery(&body, db)
 	db.Debug().Joins("Review").Find(&motorcycles)
 
