@@ -8,8 +8,8 @@ type Motorcycle struct {
 	YearEnd        uint16  `json:"year_end"`
 	Price          float32 `json:"price"`
 	Category       string  `json:"category"`
-	EngineSize     string  `json:"engine_size"`
-	EngineType     uint16  `json:"engine_type"`
+	EngineSize     uint16  `json:"engine_size"`
+	EngineType     string  `json:"engine_type"`
 	InsuranceGroup uint8   `json:"insurance_group"`
 	MPG            uint8   `json:"mpg"`
 	TankRange      uint16  `json:"tank_range"`
