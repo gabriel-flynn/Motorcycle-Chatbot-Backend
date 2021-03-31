@@ -29,7 +29,6 @@ func GetClosestTrack(w http.ResponseWriter, r *http.Request) {
 		controllers.RespondJSON(w, http.StatusInternalServerError, err)
 	}
 
-	// I feel like there's probably a better way to do this
 	responseJson := map[string]interface{} {
 		"travel_time": travelTime,
 		"track": user.ClosestTrack,
