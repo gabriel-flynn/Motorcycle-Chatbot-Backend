@@ -32,11 +32,13 @@ func SaveMotorcycles(w http.ResponseWriter, r *http.Request) {
 	if result.Error != nil {
 		var i struct{}
 		controllers.RespondJSON(w, http.StatusNotFound, i)
+		return
 	} else {
 		user.Motorcycles = motorcycles
 		db.Exec("DELETE FROM `track-locator`.user_motorcycles WHERE user_ip_address = ?", ipStr)
 		db.Model(&user).Association("Motorcycles").Clear()
 		db.Model(&user).Association("Motorcycles").Append(&motorcycles)
+		controllers.RespondJSON(w, http.StatusOK, user)
+		return
 	}
-	controllers.RespondJSON(w, http.StatusOK, user)
 }

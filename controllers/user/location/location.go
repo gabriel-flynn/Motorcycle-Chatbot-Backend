@@ -26,6 +26,7 @@ func UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	if result.Error != nil {
 		var i struct{}
 		controllers.RespondJSON(w, http.StatusNotFound, i)
+		return
 	}
 
 	var body updateLocationRequestBody

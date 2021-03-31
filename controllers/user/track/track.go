@@ -21,6 +21,7 @@ func GetClosestTrack(w http.ResponseWriter, r *http.Request) {
 	if result.Error != nil {
 		var i struct{}
 		controllers.RespondJSON(w, http.StatusNotFound, i)
+		return
 	}
 
 	travelTime, err := services.TravelTimeToTrack(user.Location, user.ClosestTrack)

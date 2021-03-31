@@ -78,8 +78,10 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	result := db.Preload("Motorcycles.Review").Preload(clause.Associations).First(&user, "ip_address = ?", ipStr)
 	if result.Error == nil {
 		controllers.RespondJSON(w, http.StatusOK, user)
+		return
 	} else {
 		var i struct{}
 		controllers.RespondJSON(w, http.StatusNoContent, i)
+		return
 	}
 }
