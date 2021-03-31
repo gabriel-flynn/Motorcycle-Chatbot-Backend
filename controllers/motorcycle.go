@@ -34,8 +34,13 @@ func (r *motoRequestBody) cleanup() {
 func buildQuery(body *motoRequestBody, db *gorm.DB) *gorm.DB {
 	//Need to clean up the database -> looks of missing info
 	chain := db.Where("make != \"\" AND model != \"\"")
-	for _, category := range body.Categories {
-		chain = chain.Where("category LIKE ?", fmt.Sprintf("%%%s%%", category))
+	for i, category := range body.Categories {
+		query := "category LIKE ?"
+		if i > 0 {
+			chain = chain.Or(query, fmt.Sprintf("%%%s%%", category))
+		} else {
+			chain = chain.Where(query, fmt.Sprintf("%%%s%%", category))
+		}
 	}
 	if body.Budget != 0 {
 		chain = chain.Where("price <= ? AND price != 0", body.Budget)
@@ -83,7 +88,7 @@ func GetMotorcycleRecommendations(w http.ResponseWriter, r *http.Request) {
 	var motorcycles []models.Motorcycle
 	body.cleanup()
 	chain := buildQuery(&body, db)
-	chain.Joins("Review").Limit(int(top)).Find(&motorcycles)
+	chain.Debug().Joins("Review").Limit(int(top)).Find(&motorcycles)
 
 	RespondJSON(w, http.StatusOK, motorcycles)
 }
