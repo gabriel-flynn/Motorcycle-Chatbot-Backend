@@ -7,6 +7,7 @@ import (
 	"github.com/gabriel-flynn/Track-Locator/models"
 	"github.com/gabriel-flynn/Track-Locator/services"
 	"github.com/gabriel-flynn/Track-Locator/utils"
+	"gorm.io/gorm/clause"
 	"net"
 	"net/http"
 )
@@ -73,9 +74,8 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		//TODO: HANDLE ERROR
 	}
-	var user *models.User
-	result := db.Joins("ClosestTrack").Joins("Location").First(&user, "ip_address = ?", ipStr)
-
+	var user models.User
+	result := db.Preload("Motorcycles.Review").Preload(clause.Associations).First(&user, "ip_address = ?", ipStr)
 	if result.Error == nil {
 		controllers.RespondJSON(w, http.StatusOK, user)
 	} else {

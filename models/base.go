@@ -30,7 +30,7 @@ func init() {
 	}
 	db = conn
 
-	db.AutoMigrate(&User{}, &Location{}, &Track{})
+	db.AutoMigrate(&Motorcycle{}, &User{}, &Location{}, &Track{})
 }
 
 func GetDB() *gorm.DB {

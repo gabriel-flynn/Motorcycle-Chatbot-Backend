@@ -1,11 +1,13 @@
-package controllers
+package motorcycles
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gabriel-flynn/Track-Locator/controllers"
 	"github.com/gabriel-flynn/Track-Locator/models"
 	"gorm.io/gorm"
 	"math"
+	"net"
 	"net/http"
 	"strconv"
 )
@@ -33,35 +35,34 @@ func (r *motoRequestBody) cleanup() {
 
 func buildQuery(body *motoRequestBody, db *gorm.DB) *gorm.DB {
 	//Need to clean up the database -> looks of missing info
-	db = db.Where("make != \"\" AND model != \"\"")
+	chain := db.Where("make != \"\" AND model != \"\"")
 	for _, category := range body.Categories {
-		fmt.Println("Category: " + category)
-		db = db.Where("category LIKE ?", fmt.Sprintf("%%%s%%", category))
+		chain = chain.Where("category LIKE ?", fmt.Sprintf("%%%s%%", category))
 	}
 	if body.Budget != 0 {
-		db = db.Where("price <= ? AND price != 0", body.Budget)
+		chain = chain.Where("price <= ? AND price != 0", body.Budget)
 	}
 	if body.SeatHeight != 0 {
-		db = db.Where("seat_height <= ?", body.SeatHeight)
+		chain = chain.Where("seat_height <= ?", body.SeatHeight)
 	}
 	if body.YearStart != 0 {
-		db = db.Where("year_start >= ?", body.YearStart)
+		chain = chain.Where("year_start >= ?", body.YearStart)
 	}
 	if body.YearEnd != math.MaxUint16 {
-		db = db.Where("year_end <= ? AND year_end != 0", body.YearEnd)
+		chain = chain.Where("year_end <= ? AND year_end != 0", body.YearEnd)
 	}
 	if len(body.EngineTypes) > 0 {
-		db = db.Where("engine_type IN ?", body.EngineTypes)
+		chain = chain.Where("engine_type IN ?", body.EngineTypes)
 	}
 
-	db = db.Order("overall_rating DESC")
+	chain = chain.Order("overall_rating DESC")
 	if len(body.OrderBy) > 0 {
 		for _, order := range body.OrderBy {
 			order = fmt.Sprintf("Review__%s DESC", order)
-			db = db.Order(order)
+			chain = chain.Order(order)
 		}
 	}
-	return db
+	return chain
 }
 
 func GetMotorcycles(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +72,6 @@ func GetMotorcycles(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		top = 5
 	}
-	fmt.Println(top)
 	var body motoRequestBody
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&body); err != nil {
@@ -82,11 +82,25 @@ func GetMotorcycles(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	db := models.GetDB()
-	var motorcycles []*models.Motorcycle
+	ipStr, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		//TODO: HANDLE ERROR
+	}
+	var motorcycles []models.Motorcycle
 	body.cleanup()
-	db = buildQuery(&body, db)
-	db.Debug().Joins("Review").Limit(int(top)).Find(&motorcycles)
+	chain := buildQuery(&body, db)
+	chain.Joins("Review").Limit(int(top)).Find(&motorcycles)
 
-	RespondJSON(w, http.StatusOK, motorcycles)
+	var user models.User
+	result := db.Preload("Motorcycles").First(&user, "ip_address = ?", ipStr)
+	if result.Error != nil {
+		var i struct{}
+		controllers.RespondJSON(w, http.StatusNotFound, i)
+	} else {
+		db.Exec("DELETE FROM `track-locator`.user_motorcycles WHERE user_ip_address = ?", ipStr)
+		db.Model(&user).Association("Motorcycles").Clear()
+		db.Model(&user).Association("Motorcycles").Append(&motorcycles)
+	}
+	controllers.RespondJSON(w, http.StatusOK, motorcycles)
 
 }

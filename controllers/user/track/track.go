@@ -16,7 +16,7 @@ func GetClosestTrack(w http.ResponseWriter, r *http.Request) {
 		//TODO: HANDLE ERROR
 	}
 
-	var user *models.User
+	var user models.User
 	result := db.Joins("ClosestTrack").Joins("Location").First(&user, "ip_address = ?", ipStr)
 	if result.Error != nil {
 		var i struct{}
