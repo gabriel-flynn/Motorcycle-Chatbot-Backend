@@ -38,5 +38,5 @@ func SaveMotorcycles(w http.ResponseWriter, r *http.Request) {
 		db.Model(&user).Association("Motorcycles").Clear()
 		db.Model(&user).Association("Motorcycles").Append(&motorcycles)
 	}
-	controllers.RespondJSON(w, http.StatusOK, motorcycles)
+	controllers.RespondJSON(w, http.StatusOK, user)
 }
