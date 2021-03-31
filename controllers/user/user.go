@@ -33,10 +33,16 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 		state = record.Subdivisions[0].Names["en"]
 	}
 
+	var locationStr string
+	if city != "" && state != "" {
+		locationStr = fmt.Sprintf("%s,%s", city, state)
+	} else {
+		locationStr = fmt.Sprintf("%s%s", city, state)
+	}
 	location := &models.Location{
 		Latitude:       record.Location.Latitude,
 		Longitude:      record.Location.Longitude,
-		LocationString: fmt.Sprintf("%s,%s", city, state),
+		LocationString: locationStr,
 	}
 	closestTrack := services.FindClosestTrack(location)
 	var body requestBody
