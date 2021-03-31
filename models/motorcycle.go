@@ -1,7 +1,7 @@
 package models
 
 type Motorcycle struct {
-	Id             uint    `gorm:"primaryKey;" json:"-"`
+	Id             uint    `gorm:"primaryKey;" json:"id"`
 	Make           string  `json:"make"`
 	Model          string  `json:"model"`
 	YearStart      uint16  `json:"year_start"`
