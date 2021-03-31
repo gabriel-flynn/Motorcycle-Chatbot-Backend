@@ -9,16 +9,6 @@ import (
 	"net/http"
 )
 
-type motoRequestBody struct {
-	Categories  []string `json:"categories"`
-	Budget      float32  `json:"budget"`
-	SeatHeight  uint8    `json:"seat_height"`
-	YearStart   uint16   `json:"year_start"`
-	YearEnd     uint16   `json:"year_end"`
-	EngineTypes []string `json:"engine_types"`
-	OrderBy     []string `json:"order_by"`
-}
-
 func SaveMotorcycles(w http.ResponseWriter, r *http.Request) {
 
 	var motorcycles []models.Motorcycle
