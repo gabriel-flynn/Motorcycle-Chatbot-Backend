@@ -94,7 +94,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 	var user models.User
 	result := db.Delete(&user, "ip_address = ?", ipStr)
-	if result.Error == nil {
+	if result.Error == nil && result.RowsAffected > 0 {
 		controllers.RespondJSON(w, http.StatusNoContent, nil)
 		return
 	} else {
