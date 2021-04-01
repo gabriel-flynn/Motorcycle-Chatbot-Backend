@@ -70,12 +70,12 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	db := models.GetDB()
-	_, _, err := net.SplitHostPort(r.RemoteAddr)
+	ipStr, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		//TODO: HANDLE ERROR
 	}
 	var user models.User
-	result := db.Preload("Motorcycles.Review").Preload(clause.Associations).First(&user, "ip_address = ?", "127.0.0.1")
+	result := db.Preload("Motorcycles.Review").Preload(clause.Associations).First(&user, "ip_address = ?", ipStr)
 	if result.Error == nil {
 		controllers.RespondJSON(w, http.StatusOK, user)
 		return
