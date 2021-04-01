@@ -42,6 +42,7 @@ func UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	services.SetLocationAndLatitude(user.Location)
 	user.ClosestTrack = services.FindClosestTrack(user.Location)
 
+	db.Save(&user.Location)
 	db.Save(&user)
 
 	controllers.RespondJSON(w, http.StatusOK, user)
