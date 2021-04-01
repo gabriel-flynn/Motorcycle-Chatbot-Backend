@@ -95,11 +95,11 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	result := db.Delete(&user, "ip_address = ?", ipStr)
 	if result.Error == nil {
-		controllers.RespondJSON(w, http.StatusOK, user)
+		controllers.RespondJSON(w, http.StatusNoContent, nil)
 		return
 	} else {
 		var i struct{}
-		controllers.RespondJSON(w, http.StatusNoContent, i)
+		controllers.RespondJSON(w, http.StatusNotFound, i)
 		return
 	}
 }
