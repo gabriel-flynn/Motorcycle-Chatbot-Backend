@@ -85,3 +85,21 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	db := models.GetDB()
+	ipStr, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		//TODO: HANDLE ERROR
+	}
+	var user models.User
+	result := db.Delete(&user, "ip_address = ?", ipStr)
+	if result.Error == nil {
+		controllers.RespondJSON(w, http.StatusOK, user)
+		return
+	} else {
+		var i struct{}
+		controllers.RespondJSON(w, http.StatusNoContent, i)
+		return
+	}
+}

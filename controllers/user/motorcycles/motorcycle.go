@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gabriel-flynn/Track-Locator/controllers"
 	"github.com/gabriel-flynn/Track-Locator/models"
+	"gorm.io/gorm/clause"
 	"net"
 	"net/http"
 )
@@ -26,9 +27,8 @@ func SaveMotorcycles(w http.ResponseWriter, r *http.Request) {
 		//TODO: HANDLE ERROR
 	}
 
-	fmt.Println(motorcycles[0].Review.Id)
 	var user models.User
-	result := db.Preload("Motorcycles").First(&user, "ip_address = ?", ipStr)
+	result := db.Preload("Motorcycles").Preload(clause.Associations).First(&user, "ip_address = ?", ipStr)
 	if result.Error != nil {
 		var i struct{}
 		controllers.RespondJSON(w, http.StatusNotFound, i)

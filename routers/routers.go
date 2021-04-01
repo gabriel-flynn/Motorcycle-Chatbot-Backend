@@ -13,6 +13,7 @@ func SetupRouter() *mux.Router {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/user", user.NewUser).Methods("POST")
 	myRouter.HandleFunc("/user", user.GetUser).Methods("GET")
+	myRouter.HandleFunc("/user", user.DeleteUser).Methods("DELETE")
 	myRouter.HandleFunc("/user/location", location.UpdateLocation).Methods("PATCH")
 	myRouter.HandleFunc("/user/track", track.GetClosestTrack).Queries("closest", "true").Methods("GET")
 	myRouter.HandleFunc("/user/motorcycles", motorcycles.SaveMotorcycles).Methods("POST")
