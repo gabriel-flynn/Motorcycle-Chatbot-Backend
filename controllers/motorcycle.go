@@ -49,10 +49,10 @@ func buildQuery(body *motoRequestBody, db *gorm.DB) *gorm.DB {
 		chain = chain.Where("seat_height <= ?", body.SeatHeight)
 	}
 	if body.YearStart != 0 {
-		chain = chain.Where("year_start >= ?", body.YearStart)
+		chain = chain.Where("year_end >= ? OR year_end = 0", body.YearStart)
 	}
 	if body.YearEnd != math.MaxUint16 {
-		chain = chain.Where("year_end <= ? AND year_end != 0", body.YearEnd)
+		chain = chain.Where("year_start <= ? AND year_start != 0", body.YearEnd)
 	}
 	if len(body.EngineTypes) > 0 {
 		chain = chain.Where("engine_type IN ?", body.EngineTypes)
